@@ -1,6 +1,6 @@
 require_relative 'helper'
 
-describe do
+describe 'basic project' do
   it do
     project = DC::Project.new directory: 'spec/projects/basic'
     project.run
@@ -12,5 +12,13 @@ describe do
   after do
     Docker::Image.remove 'a'
     Docker::Image.remove 'b'
+  end
+end
+
+describe 'project with bad image' do
+  it do
+    project = DC::Project.new directory: 'spec/projects/with_bad_image'
+    expect { project.run }
+      .to raise_error Docker::Error::UnexpectedResponseError
   end
 end
