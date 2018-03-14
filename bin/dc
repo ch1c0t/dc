@@ -1,4 +1,4 @@
 #!/usr/bin/env ruby
 
 require 'dc'
-DC.run
+DC::Project.new.run
