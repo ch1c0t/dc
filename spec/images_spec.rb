@@ -22,3 +22,20 @@ describe 'project with bad image' do
       .to raise_error Docker::Error::UnexpectedResponseError
   end
 end
+
+describe 'project with interdependencies' do
+  it do
+    project = DC::Project.new directory: 'spec/projects/with_interdependencies'
+    project.run
+
+    assert { Docker::Image.exist? 'a' }
+    assert { Docker::Image.exist? 'b' }
+    assert { Docker::Image.exist? 'c' }
+  end
+
+  after do
+    Docker::Image.remove 'a'
+    Docker::Image.remove 'b'
+    Docker::Image.remove 'c'
+  end
+end
