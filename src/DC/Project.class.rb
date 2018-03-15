@@ -2,14 +2,17 @@ def initialize directory: '.', docker_socket: 'tcp://127.0.0.1:2375'
   check_if_docker_is_available_at docker_socket
 
   @directory = File.expand_path directory
+
   @images_directory = "#{@directory}/.docker/images"
+  @images = prepare_images
+
   @services_file = "#{@directory}/.docker/services.yml"
 end
 
-attr_reader :containers
+attr_reader :images, :containers
 
 def run
-  prepare_images
+  build_images
   prepare_services
 end
 
@@ -22,13 +25,17 @@ private
 
   def prepare_images
     if Dir.exist? @images_directory
-      images = (Dir.entries(@images_directory) - ['.', '..']).map do |name|
+      (Dir.entries(@images_directory) - ['.', '..']).map do |name|
         Image.new name, directory: "#{@images_directory}/#{name}"
       end
+    else
+      []
+    end
+  end
 
-      images.each do |image|
-        image.build unless image.exist?
-      end
+  def build_images
+    images.each do |image|
+      image.build unless image.exist?
     end
   end
 
