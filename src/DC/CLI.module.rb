@@ -9,11 +9,13 @@ def self.run
       case ARGV.first
       when 'rs'
       when 'ri'
+        project.rebuild_images
       end
     when 2
       case ARGV
       when ['rebuild', 'services']
       when ['rebuild', 'images']
+        project.rebuild_images
       end
     end
   end

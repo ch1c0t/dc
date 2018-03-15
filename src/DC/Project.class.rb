@@ -16,6 +16,13 @@ def run
   prepare_services
 end
 
+def rebuild_images
+  images.each do |image|
+    image.tag "before_rebuild.#{Time.now.to_i}"
+    image.build
+  end
+end
+
 private
   def check_if_docker_is_available_at docker_socket
     Docker.url = docker_socket

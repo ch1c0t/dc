@@ -33,6 +33,10 @@ def build
   image
 end
 
+def tag tag
+  Docker::Image.get(@name).tag repo: @name, tag: tag
+end
+
 private
   def build_parent_image_if_available
     dockerfile = IO.read "#{@directory}/Dockerfile"
