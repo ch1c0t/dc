@@ -20,9 +20,11 @@ end
 def start
   network = Network.new
   containers.each { |container| network.connect container.id }
-
   containers.each &:start
-  at_exit { containers.each &:destroy }
+end
+
+def destroy
+  containers.each &:destroy
 end
 
 private
