@@ -6,12 +6,12 @@ describe 'basic project' do
     project.run
 
     assert { Docker::Image.exist? 'a' }
-    assert { Docker::Image.exist? 'b' }
+    assert { Docker::Image.exist? 'e' }
   end
 
   after do
     Docker::Image.remove 'a'
-    Docker::Image.remove 'b'
+    Docker::Image.remove 'e'
   end
 end
 
@@ -29,13 +29,11 @@ describe 'project with interdependencies' do
     project.run
 
     assert { Docker::Image.exist? 'a' }
-    assert { Docker::Image.exist? 'b' }
     assert { Docker::Image.exist? 'c' }
   end
 
   after do
     Docker::Image.remove 'a'
-    Docker::Image.remove 'b'
     Docker::Image.remove 'c'
   end
 end

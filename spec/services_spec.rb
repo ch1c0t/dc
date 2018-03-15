@@ -9,13 +9,12 @@ describe do
     Docker::Image.remove 'some_service'
   end
 
-  it do
+  it 'starts services' do
     project = DC::Project.new directory: 'spec/projects/basic_services'
     project.run
-
-    assert { Docker::Image.exist? 'hobby' }
-    assert { Docker::Image.exist? 'first' }
-    assert { Docker::Image.exist? 'second' }
-    assert { Docker::Image.exist? 'proxy' }
+    
+    assert { project.containers.size == 3 }
+    assert { Docker::Container.all.size == 3 }
+    assert { project.containers.map(&:name) == ['first', 'second', 'proxy'] }
   end
 end

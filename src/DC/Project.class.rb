@@ -6,6 +6,8 @@ def initialize directory: '.', docker_socket: 'tcp://127.0.0.1:2375'
   @services_file = "#{@directory}/.docker/services.yml"
 end
 
+attr_reader :containers
+
 def run
   prepare_images
   prepare_services
@@ -42,10 +44,20 @@ private
         image.build unless image.exist?
       end
         
-      hash.each do |name, value|
-        if value.is_a?(Hash) && (ports = value['ports']) && ports.is_a?(Array)
-        else
-        end
+      @containers = hash.map do |name, value|
+        ports = if value.is_a?(Hash) && value['ports'].is_a?(Array)
+                  value['ports']
+                else
+                  []
+                end
+
+        Container.new name, ports: ports
       end
+
+      network = Network.new
+      @containers.each { |container| network.connect container.id }
+
+      @containers.each &:start
+      at_exit { @containers.each &:destroy }
     end
   end
