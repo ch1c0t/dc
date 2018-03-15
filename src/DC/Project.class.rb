@@ -9,7 +9,11 @@ def initialize directory: '.', docker_socket: 'tcp://127.0.0.1:2375'
   @services_file = "#{@directory}/.docker/services.yml"
 end
 
-attr_reader :images, :containers
+attr_reader :images, :group
+
+def containers
+  group.containers
+end
 
 def run
   build_images
@@ -48,30 +52,8 @@ private
 
   def prepare_services
     if File.exist? @services_file
-      hash = YAML.load_file @services_file
-
-      images = hash.keys.map do |name|
-        Image.new name, directory: "#{@directory}/#{name}"
-      end
-
-      images.each do |image|
-        image.build unless image.exist?
-      end
-        
-      @containers = hash.map do |name, value|
-        ports = if value.is_a?(Hash) && value['ports'].is_a?(Array)
-                  value['ports']
-                else
-                  []
-                end
-
-        Container.new name, ports: ports
-      end
-
-      network = Network.new
-      @containers.each { |container| network.connect container.id }
-
-      @containers.each &:start
-      at_exit { @containers.each &:destroy }
+      @group = Group.new (YAML.load_file @services_file), directory: @directory
+      @group.build_missing_images
+      @group.start
     end
   end
