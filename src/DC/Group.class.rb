@@ -23,8 +23,15 @@ def start
   containers.each &:start
 end
 
-def destroy
+def stop
   containers.each &:destroy
+end
+
+def rebuild_images
+  images.each do |image|
+    image.tag "before_rebuild.#{Time.now.to_i}"
+    image.build
+  end
 end
 
 private
