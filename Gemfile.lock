@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    dc (0.0.0)
+    dc (0.0.2)
       docker-api
 
 GEM
